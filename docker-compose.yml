@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+  planter:
+    build: .
+    image: queuetue/planter:latest
+    environment:
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "3030:3030"
+    depends_on:
+      - redis
+
+  sync-replica:
+    image: queuetue/planter:latest
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - PLANTER_SYNC_FROM=http://planter:3030
+      - PLANTER_SYNC_INTERVAL=30
+    ports:
+      - "3031:3030"
+    depends_on:
+      - redis

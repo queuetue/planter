@@ -1,0 +1,36 @@
+[package]
+name = "planter"
+version = "0.1.0"
+edition = "2021"  # Note: as of now, the latest valid edition is 2021
+
+[lib]
+name = "planter"
+path = "src/lib.rs"
+
+[[bin]]
+name = "planter"
+path = "src/main.rs"
+
+[dependencies]
+axum = "0.7"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.37", features = ["full"] }
+redis = { version = "0.25", features = ["aio", "tokio-comp"] }
+humantime = "2.1"
+lazy_static = "1.5"
+chrono = { version = "0.4", features = ["serde"] }
+tempfile = "3.10"
+reqwest = { version = "0.12.22", features = ["json"] }
+uuid = { version = "1.0", features = ["v4"] }
+sha2 = "0.10"
+hex = "0.4"
+async-nats = "0.36"
+tokio-stream = "0.1"
+futures = "0.3"
+
+[dev-dependencies]
+tokio-test = "0.4"
+tower = { version = "0.4", features = ["util"] }
+hyper = { version = "1.0", features = ["full"] }
+http-body-util = "0.1"

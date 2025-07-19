@@ -1,0 +1,136 @@
+openapi: 3.1.0
+info:
+  title: Planter API
+  version: 0.1.0
+  description: |
+    The Planter API implements the [Phase Manifest Protocol](./PROTOCOL.md).
+    It accepts declarative phase plans, diffs them against current state, and executes them.
+
+servers:
+  - url: http://localhost:3030
+
+paths:
+  /plan:
+    post:
+      summary: Submit a Phase Manifest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Phase'
+      responses:
+        '200':
+          description: Plan received and processed
+  /state:
+    get:
+      summary: Return current plan state
+      responses:
+        '200':
+          description: Current phase state
+  /diff:
+    get:
+      summary: Get diff between current and incoming plan
+      responses:
+        '200':
+          description: Plan diff
+  /logs:
+    get:
+      summary: Get logs for current or previous runs
+      responses:
+        '200':
+          description: Logs
+  /phases/{id}:
+    get:
+      summary: Inspect or rerun a specific phase
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Phase details
+  /apply:
+    post:
+      summary: Commit staged plan to execution
+      responses:
+        '200':
+          description: Plan applied
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Health status
+  /ready:
+    get:
+      summary: Readiness check
+      responses:
+        '200':
+          description: Readiness status
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      responses:
+        '200':
+          description: Metrics
+          content:
+            text/plain:
+              schema:
+                type: string
+  /STOP:
+    post:
+      summary: Save state and shut down
+      responses:
+        '200':
+          description: Shutdown initiated
+  /RELOAD:
+    post:
+      summary: Reload state from file
+      responses:
+        '200':
+          description: State reloaded
+
+components:
+  schemas:
+    Phase:
+      type: object
+      required: [kind, id, spec]
+      properties:
+        kind:
+          type: string
+          example: Phase
+        id:
+          type: string
+          example: setup
+        spec:
+          type: object
+          properties:
+            description:
+              type: string
+            selector:
+              type: object
+              properties:
+                matchLabels:
+                  type: object
+                  additionalProperties:
+                    type: string
+            waitFor:
+              type: object
+              properties:
+                phases:
+                  type: array
+                  items:
+                    type: string
+            retry:
+              type: object
+              properties:
+                maxAttempts:
+                  type: integer
+            onFailure:
+              type: object
+              additionalProperties: true

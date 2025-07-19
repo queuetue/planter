@@ -1,0 +1,20 @@
+phases:
+  - metadata:
+      name: preflight
+      labels:
+        phase: preflight
+      annotations:
+        displayName: "Preflight Checks"
+    spec:
+      description: Deploy base infra like Redis/NATS.
+      selector:
+        matchLabels:
+          phase: preflight
+      onFailure:
+        action: raise
+        spec:
+          message: 
+            - "Preflight checks failed, please check the logs."
+          notify:
+            email: oncall@team.com
+            slack: "#ops-alerts"

@@ -1,0 +1,27 @@
+[
+  {
+    "Kind": "Phase",
+    "Id": "initialization",
+    "Spec": {
+      "description": "Generate IDs and bootstrap state",
+      "selector": { "match_labels": { "phase": "initialization" } },
+      "waitFor": { "phases": ["preflight"] },
+      "retry": { "maxAttempts": 5 },
+      "onFailure": {
+        "action": "continue",
+        "spec": {
+          "message": ["Initialization failed, continuing with defaults"],
+          "labels": { "mode": "fallback" }
+        }
+      }
+    }
+  },
+  {
+    "Kind": "Phase", 
+    "Id": "deployment",
+    "Spec": {
+      "description": "Deploy the application",
+      "selector": { "match_labels": { "phase": "deployment" } }
+    }
+  }
+]
