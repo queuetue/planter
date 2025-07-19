@@ -40,6 +40,41 @@ PMP is transport-agnostic, supporting both HTTP and message-based interfaces (li
 
 ## Phase Manifest Format
 
+
+### Field Naming Conventions
+
+PMP manifests use specific case conventions for JSON fields:
+
+- **Top-level fields** (e.g., in each Phase object): PascalCase (e.g., `Kind`, `Id`, `Spec`)
+- **Nested fields** (inside `Spec`): snake_case (e.g., `match_labels`, `instance_mode`, `wait_for`, `on_failure`, `on_success`)
+
+This applies to all JSON submitted to PMP-compliant servers. Example:
+
+```json
+[
+  {
+    "Kind": "Phase",
+    "Id": "preflight",
+    "Spec": {
+      "description": "Ensure dependencies are met",
+      "selector": {
+        "match_labels": { "phase": "preflight" }
+      },
+      "instance_mode": "immediate",
+      "wait_for": {},
+      "retry": { "max_attempts": 3 },
+      "on_failure": {
+        "action": "raise",
+        "spec": {
+          "message": ["Preflight failed"],
+          "notify": { "email": "ops@example.com" }
+        }
+      }
+    }
+  }
+]
+```
+
 The protocol accepts a **Phase Manifest** as a `POST` body at `/plan`. The content type must be:
 
 ```http
